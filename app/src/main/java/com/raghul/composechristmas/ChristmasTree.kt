@@ -1,5 +1,6 @@
 package com.raghul.composechristmas
 
+import android.graphics.BlurMaskFilter
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
@@ -8,14 +9,20 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asComposePath
+import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.tooling.preview.Preview
@@ -122,7 +129,7 @@ fun Tree() {
         Box(modifier = Modifier
             .align(alignment = Alignment.TopCenter)
             .offset(y = 70.dp)
-            .size(70.dp)
+            .size(105.dp)
             .radialStar()
         )
         Box(
@@ -160,6 +167,10 @@ fun Tree() {
                 .size(30.dp)
                 .baubles(ballColors = listThreeBauble, tipColor = Color(0, 34, 23))
         )
+        Box(modifier = Modifier.align(alignment = Alignment.TopStart)
+            .offset(x = 20.dp, y = 10.dp)
+            .size(60.dp)
+            .moon())
     }
 }
 
@@ -346,13 +357,62 @@ fun Modifier.radialStar(
     }
 }
 
+@Composable
+fun Modifier.moon(): Modifier = this.drawWithCache {
+    val width = size.width
+    val height = size.height
+    val center = Offset(width / 2, height / 2)
+    val moonRadius = size.minDimension / 2
+
+    val craterPaint = Paint().apply {
+        color = Color(0xFFDDDDDD)
+        blendMode = BlendMode.SrcOver
+        asFrameworkPaint().apply {
+            maskFilter = BlurMaskFilter(5f, BlurMaskFilter.Blur.NORMAL)
+        }
+    }
+
+    val moonPath = Path().apply {
+        addOval(Rect(center = center, radius = moonRadius))
+    }
+    onDrawBehind {
+        clipPath(moonPath) {
+            drawCircle(color = Color.White, radius = moonRadius, center)
+
+            drawIntoCanvas { canvas ->
+                canvas.drawCircle(
+                    center = center + Offset(-width * 0.2f, -height * 0.1f),
+                    radius = moonRadius * 0.25f,
+                    craterPaint
+                )
+                canvas.drawOval(rect = Rect(center, moonRadius / 5 ), craterPaint)
+                canvas.drawCircle(
+                    center = center + Offset(width * 0.4f, height * 0.2f),
+                    radius = moonRadius * 0.3f,
+                    craterPaint
+                )
+                canvas.drawCircle(
+                    center = center + Offset(width * 0.2f, -height * 0.2f),
+                    radius = moonRadius * 0.5f,
+                    craterPaint
+                )
+                canvas.drawCircle(
+                    center = center + Offset(-width * 0.2f, height * 0.3f),
+                    radius = moonRadius * 0.2f,
+                    craterPaint
+                )
+            }
+        }
+    }
+}
+
 //@Preview
 //@Composable
 //private fun StarPreview() {
 //    ComposeChristmasTheme {
 //        Box(modifier = Modifier
 //            .size(200.dp)
-//            .radialStar())
+//            .moon())
 //    }
 //}
 @Preview
