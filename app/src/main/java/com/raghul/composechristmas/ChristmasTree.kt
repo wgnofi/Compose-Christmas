@@ -20,13 +20,19 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.asComposePath
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.graphics.drawscope.draw
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.graphics.shapes.CornerRounding
 import androidx.graphics.shapes.RoundedPolygon
 import androidx.graphics.shapes.star
@@ -128,9 +134,38 @@ fun Tree() {
         )
         Box(modifier = Modifier
             .align(alignment = Alignment.TopCenter)
-            .offset(y = 70.dp)
+            .offset(y = 60.dp)
             .size(105.dp)
             .radialStar()
+        )
+        Box(modifier = Modifier.size(205.dp)
+            .align(alignment = Alignment.Center)
+            .offset(x = (-5).dp,y = (-130).dp)
+            .tinselGarland())
+        Box(modifier = Modifier.size(250.dp)
+            .align(alignment = Alignment.Center)
+            .tinselGarland())
+        Box(modifier = Modifier.size(280.dp)
+            .align(alignment = Alignment.Center)
+            .offset(y = 130.dp)
+            .tinselGarland())
+        Box(modifier = Modifier.size(300.dp)
+            .align(alignment = Alignment.Center)
+            .offset(y = 250.dp)
+            .tinselGarland())
+        Box(
+            modifier = Modifier
+                .align(alignment = Alignment.Center)
+                .offset(x = (-40).dp, y = (-200).dp)
+                .size(30.dp)
+                .baubles(ballColors = listTwoBauble, tipColor = Color(148, 114, 20))
+        )
+        Box(
+            modifier = Modifier
+                .align(alignment = Alignment.Center)
+                .offset(x = (-70).dp, y = (280).dp)
+                .size(30.dp)
+                .baubles(ballColors = listZeroBauble, tipColor = Color(148, 114, 20))
         )
         Box(
             modifier = Modifier
@@ -145,6 +180,13 @@ fun Tree() {
                 .offset(x = (-5).dp, y = 20.dp)
                 .size(30.dp)
                 .baubles(ballColors = listTwoBauble, tipColor = Color(0, 71, 107))
+        )
+        Box(
+            modifier = Modifier
+                .align(alignment = Alignment.Center)
+                .offset(x = 140.dp, y = 220.dp)
+                .size(30.dp)
+                .baubles(ballColors = listOneBauble, tipColor = Color(128, 77, 85))
         )
         Box(
             modifier = Modifier
@@ -167,12 +209,50 @@ fun Tree() {
                 .size(30.dp)
                 .baubles(ballColors = listThreeBauble, tipColor = Color(0, 34, 23))
         )
-        Box(modifier = Modifier.align(alignment = Alignment.TopStart)
+        Box(modifier = Modifier
+            .align(alignment = Alignment.TopStart)
             .offset(x = 20.dp, y = 10.dp)
             .size(60.dp)
             .moon())
     }
 }
+
+@Composable
+fun Modifier.tinselGarland(): Modifier = this.drawWithCache {
+    val width = size.width
+    val height = size.height
+    val strokeWidth = width * 0.1f
+    val capWidth = strokeWidth / 2
+    val leftMost = Offset(x = 0f + capWidth, y = height * 0.5f)
+    val rightMost = Offset(x = width - capWidth, y = height * 0.3f)
+    val magnet = Offset(x = width * 0.7f, y = height * 0.5f)
+    val path = Path().apply {
+        moveTo(leftMost.x, leftMost.y)
+        quadraticTo(magnet.x, magnet.y, rightMost.x, rightMost.y)
+    }
+    val listOfTinsels = mutableListOf<Path>()
+    val magnetOfTinsel = Offset(x = width * 0.06f, height * 0.5f)
+    val miniPaths = Path().apply {
+        moveTo(leftMost.x + 10f , leftMost.y - 50f)
+        quadraticTo(magnetOfTinsel.x, magnetOfTinsel.y, leftMost.x - 10f, leftMost.y + 50f)
+    }
+    onDrawBehind {
+        drawPath(path, color = Color.White,
+            style = Stroke(width = width * 0.1f, cap = StrokeCap.Round,
+                pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 25f), 0f))
+        )
+    }
+}
+//
+//@Preview
+//@Composable
+//private fun GarlandPreview() {
+//    ComposeChristmasTheme(
+//
+//    ) {
+//        Box(modifier = Modifier.size(200.dp).tinselGarland())
+//    }
+//}
 
 @Composable
 fun Modifier.snowGround():Modifier  = this.drawWithCache {
