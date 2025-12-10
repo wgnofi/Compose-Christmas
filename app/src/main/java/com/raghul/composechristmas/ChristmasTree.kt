@@ -11,10 +11,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -140,18 +142,18 @@ fun Tree() {
         )
         Box(modifier = Modifier.size(205.dp)
             .align(alignment = Alignment.Center)
-            .offset(x = (-5).dp,y = (-130).dp)
+            .offset(x = (-5).dp,y = (-140).dp)
             .tinselGarland())
         Box(modifier = Modifier.size(250.dp)
             .align(alignment = Alignment.Center)
             .tinselGarland())
         Box(modifier = Modifier.size(280.dp)
             .align(alignment = Alignment.Center)
-            .offset(y = 130.dp)
+            .offset(y = 120.dp)
             .tinselGarland())
         Box(modifier = Modifier.size(300.dp)
             .align(alignment = Alignment.Center)
-            .offset(y = 250.dp)
+            .offset(y = 240.dp)
             .tinselGarland())
         Box(
             modifier = Modifier
@@ -214,6 +216,26 @@ fun Tree() {
             .offset(x = 20.dp, y = 10.dp)
             .size(60.dp)
             .moon())
+        Box(modifier = Modifier
+            .align(alignment = Alignment.Center)
+            .size(60.dp)
+            .offset(x = 20.dp,y = (-70).dp)
+            .candyCane()
+        )
+        Box(modifier = Modifier
+            .align(alignment = Alignment.Center)
+            .size(60.dp)
+            .rotate(-5f)
+            .offset(x = (-50).dp,y = (60).dp)
+            .candyCane()
+        )
+        Box(modifier = Modifier
+            .align(alignment = Alignment.Center)
+            .size(60.dp)
+            .rotate(5f)
+            .offset(x = (50).dp,y = (160).dp)
+            .candyCane()
+        )
     }
 }
 
@@ -239,7 +261,7 @@ fun Modifier.tinselGarland(): Modifier = this.drawWithCache {
     onDrawBehind {
         drawPath(path, color = Color.White,
             style = Stroke(width = width * 0.1f, cap = StrokeCap.Round,
-                pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 25f), 0f))
+                pathEffect = PathEffect.dashPathEffect(floatArrayOf(15f, 25f), 0f))
         )
     }
 }
@@ -438,6 +460,105 @@ fun Modifier.radialStar(
 }
 
 @Composable
+fun Modifier.candyCane(): Modifier = this.drawWithCache {
+    val width = size.width
+    val height = size.height
+    val control = Offset(x = width * 0.8f, y = height * -0.3f)
+    val left = Offset(x = width * 0.3f, height * 0.5f)
+    val right = Offset(x = width * 0.8f, height * 0.9f)
+
+    val path = Path().apply {
+        moveTo(x = width * 0.4f, y = height * 0.9f)
+        arcTo(rect = Rect(center = Offset(x = width * 0.5f, y = height * 0.3f), radius = size.minDimension / 6),
+            startAngleDegrees = 180f, sweepAngleDegrees = 180f, forceMoveTo = false)
+    }
+    onDrawBehind {
+        drawContext.canvas.saveLayer(size.toRect(), Paint())
+        drawPath(
+            path, color = Color.White,
+            style = Stroke(width * 0.1f, cap = StrokeCap.Round)
+        )
+        rotate(60f) {
+            drawRect(
+                color = Color.Red,
+                topLeft = left,
+                size = Size(width = width * 0.1f, height = height * 0.2f),
+                blendMode = BlendMode.SrcIn
+            )
+            drawRect(
+                color = Color.Red,
+                topLeft = Offset(left.x, left.y * 0.2f),
+                size = Size(width = width * 0.1f, height = height * 0.3f),
+                blendMode = BlendMode.SrcIn
+            )
+            drawRect(
+                color = Color.Red,
+                topLeft = Offset(left.x * 1.6f, left.y),
+                size = Size(width = width * 0.1f, height = height * 0.3f),
+                blendMode = BlendMode.SrcIn
+            )
+            drawRect(
+                color = Color.Red,
+                topLeft = Offset(left.x * 2.2f, left.y * 1.2f),
+                size = Size(width = width * 0.1f, height = height * 0.3f),
+                blendMode = BlendMode.SrcIn
+            )
+        }
+        drawContext.canvas.restore()
+    }
+}
+@Composable
+fun Modifier.stockings(): Modifier = this.drawWithCache {
+    val width = size.width
+    val height = size.height
+    val sockTopLeft = Offset(x = width * 0.35f, y = height * 0.2f)
+    val sockBottomRight = Offset(x = width * 0.6f, y = height * 0.7f)
+    val sockBottomLeft = Offset(x = width * 0.8f, y = height * 0.95f)
+    val controlPointLeft = Offset(x = width * 0.1f, height * 1.1f)
+    val sockControl = Offset(x = width * 1.1f, y = height * 0.8f)
+
+    val sockTopRight = Offset(x = width * 0.6f, y = height * 0.2f)
+    val sockControlToTop = Offset(x = width * 0.5f, y = height * 0.4f)
+
+    val stockPath = Path().apply {
+        moveTo(sockTopLeft.x, sockTopLeft.y)
+        quadraticTo(controlPointLeft.x, controlPointLeft.y, sockBottomLeft.x, sockBottomLeft.y)
+        quadraticTo(sockControl.x, sockControl.y, sockBottomRight.x, sockBottomRight.y)
+        quadraticTo(sockControlToTop.x, sockControlToTop.y, sockTopRight.x, sockTopRight.y)
+    }
+
+    onDrawBehind {
+        clipPath(stockPath) {
+            drawPath(stockPath, color = Color.Red)
+            rotate(degrees = -10f) {
+                drawRect(
+                    color = Color.White,
+                    topLeft = Offset(x = width * 0.2f, y = height * 0.4f),
+                    size = Size(width = width * 0.4f, height = height * 0.05f)
+                )
+                drawRect(
+                    color = Color.White,
+                    topLeft = Offset(x = width * 0.2f, y = height * 0.6f),
+                    size = Size(width = width * 0.4f, height = height * 0.05f)
+                )
+                drawRect(
+                    color = Color.White,
+                    topLeft = Offset(x = width * 0.2f, y = height * 0.8f),
+                    size = Size(width = width * 0.7f, height = height * 0.05f)
+                )
+                drawRect(
+                    color = Color.White,
+                    topLeft = Offset(x = width * 0.2f, y = height * 0.956f),
+                    size = Size(width = width * 0.7f, height = height * 0.05f)
+                )
+            }
+        }
+        drawRoundRect(color = Color.White, topLeft = Offset(x = width * 0.23f, y = height * 0.2f), size = Size(width = width * 0.4f, height = height * 0.15f),
+            cornerRadius = CornerRadius(x = 20f, y = 20f))
+    }
+
+}
+@Composable
 fun Modifier.moon(): Modifier = this.drawWithCache {
     val width = size.width
     val height = size.height
@@ -492,7 +613,7 @@ fun Modifier.moon(): Modifier = this.drawWithCache {
 //    ComposeChristmasTheme {
 //        Box(modifier = Modifier
 //            .size(200.dp)
-//            .moon())
+//            .candyCane())
 //    }
 //}
 @Preview
