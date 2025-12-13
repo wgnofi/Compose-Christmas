@@ -9,6 +9,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.rotate
@@ -23,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.PathMeasure
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.asComposePath
@@ -32,6 +34,7 @@ import androidx.compose.ui.graphics.drawscope.draw
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.text.drawText
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -140,10 +143,16 @@ fun Tree() {
             .size(105.dp)
             .radialStar()
         )
+
+        Box(modifier = Modifier.size(180.dp)
+            .align(alignment = Alignment.Center)
+            .offset(x = (-5).dp,y = (-190).dp)
+            .fairyLights())
         Box(modifier = Modifier.size(205.dp)
             .align(alignment = Alignment.Center)
             .offset(x = (-5).dp,y = (-140).dp)
-            .tinselGarland())
+            .tinselGarland()
+        )
         Box(modifier = Modifier.size(250.dp)
             .align(alignment = Alignment.Center)
             .tinselGarland())
@@ -155,13 +164,6 @@ fun Tree() {
             .align(alignment = Alignment.Center)
             .offset(y = 240.dp)
             .tinselGarland())
-        Box(
-            modifier = Modifier
-                .align(alignment = Alignment.Center)
-                .offset(x = (-40).dp, y = (-200).dp)
-                .size(30.dp)
-                .baubles(ballColors = listTwoBauble, tipColor = Color(148, 114, 20))
-        )
         Box(
             modifier = Modifier
                 .align(alignment = Alignment.Center)
@@ -236,6 +238,48 @@ fun Tree() {
             .offset(x = (50).dp,y = (160).dp)
             .candyCane()
         )
+        Box(modifier = Modifier
+            .align(alignment = Alignment.Center)
+            .size(75.dp)
+            .rotate(2f)
+            .offset(x = (50).dp,y = (350).dp)
+            .ribbonBox()
+        )
+        Box(modifier = Modifier
+            .align(alignment = Alignment.Center)
+            .size(55.dp)
+            .rotate(-2f)
+            .offset(x = (-20).dp,y = (350).dp)
+            .ribbonBox()
+        )
+    }
+}
+
+@Composable
+fun Modifier.ribbonBox(): Modifier = this.drawWithCache {
+    val width = size.width
+    val height = size.height
+    val topLeft = Offset(x = width * 0.2f, y = height * 0.2f)
+    val offTop = Offset(x = width * 0.5f, y = height * 0.1f)
+    val offTop2 = Offset(x = width * 0.4f, y = height * 0.1f)
+    val offTop3 = Offset(x = width * 0.15f, y = height * 0.2f)
+    onDrawBehind {
+        drawRoundRect(color = Color.Red, topLeft = topLeft, size = Size(width = width * 0.6f, height = height * 0.6f),
+            cornerRadius = CornerRadius(x = 20f, y = 20f))
+        rotate(-20f) {
+            drawRoundRect(
+                color = Color.Red,
+                topLeft = offTop,
+                size = Size(width = width * 0.1f, height = height * 0.2f),
+                cornerRadius = CornerRadius(x = 10f, y = 10f)
+            )
+        }
+        rotate(20f) {
+            drawRoundRect(color = Color.Red, topLeft = offTop2, size = Size(width = width * 0.1f, height = height * 0.2f),
+                cornerRadius = CornerRadius(x = 10f, y = 10f))
+        }
+        drawRoundRect(color =Color(208, 224, 249), topLeft = offTop3, size = Size(width = width * 0.7f, height = height * 0.2f),
+            cornerRadius = CornerRadius(x = 20f, y = 20f))
     }
 }
 
@@ -290,7 +334,7 @@ fun Modifier.snowGround():Modifier  = this.drawWithCache {
             val bottomLeft = Offset(x = 0F, y = height)
             val bottomRight = Offset(x = width, y = height)
 
-            val magnet = Offset(x = width / 2, y = height * 0.8f)
+            val magnet = Offset(x = width / 2, y = height * 0.85f)
             val path = Path().apply {
                 moveTo(bottomLeft.x, bottomLeft.y)
                 quadraticTo(magnet.x, magnet.y, bottomRight.x, bottomRight.y)
@@ -416,6 +460,43 @@ fun Modifier.drawStar(
             close()
         }
         drawPath(path, color)
+    }
+}
+
+@Composable
+fun Modifier.fairyLights(): Modifier = this.drawWithCache {
+    val christmasLightColors = listOf(
+        Color(0xFFFF0000),
+        Color(0xFF00FF00),
+    )
+
+    val width = size.width
+    val height = size.height
+    val control = Offset(x = width * 0.6f, y = height * 0.3f)
+    val path = Path().apply {
+        moveTo(x = width * 0.1f, height * 0.5f)
+        quadraticTo(control.x, control.y, width * 0.9f, height * 0.35f)
+    }
+    val pathMeasure = PathMeasure()
+    pathMeasure.setPath(path, false)
+    val totalLength = pathMeasure.length
+    val interval = size.minDimension * 0.1f
+    val exLen = size.minDimension * 0.05f
+    onDrawBehind {
+        drawPath(path, color = Color.White, style = Stroke(width = width * 0.01f))
+
+        var distance = 0f
+        var count = 0
+        while (distance <= totalLength) {
+            val innerPath = pathMeasure.getPosition(distance)
+            drawLine(color = Color.White, start = Offset(innerPath.x, innerPath.y),
+                end = Offset(innerPath.x, innerPath.y + exLen), strokeWidth = size.minDimension * 0.01f)
+            val colorForBulb = christmasLightColors[if (count % 2 == 0) 0 else 1]
+            drawOval(color = colorForBulb, topLeft = Offset(innerPath.x - (size.minDimension * 0.015f), innerPath.y + exLen), size = Size(width = size.minDimension * 0.03f, height = size.minDimension * 0.04f))
+            drawOval(color = colorForBulb.copy(alpha = 0.2f), topLeft = Offset(innerPath.x - (size.minDimension * 0.03f), innerPath.y +  (size.minDimension * 0.03f)), size = Size(width = size.minDimension * 0.06f, height = size.minDimension * 0.08f))
+            distance += interval
+            count++
+        }
     }
 }
 
@@ -613,7 +694,7 @@ fun Modifier.moon(): Modifier = this.drawWithCache {
 //    ComposeChristmasTheme {
 //        Box(modifier = Modifier
 //            .size(200.dp)
-//            .candyCane())
+//            .ribbonBox())
 //    }
 //}
 @Preview
