@@ -801,60 +801,34 @@ fun Modifier.snowFlake(): Modifier = this.drawWithCache {
     val pathMeasureFirst = PathMeasure()
     pathMeasureFirst.setPath(lineOne, false)
     onDrawBehind {
-        drawPath(lineOne, color = Color.White,
-            style = Stroke(width = width * 0.05f, cap = StrokeCap.Round))
-        drawPath(lineTwo, color = Color.White,
-            style = Stroke(width = width * 0.05f, cap = StrokeCap.Round))
-        drawPath(lineThree, color = Color.White,
-            style = Stroke(width = width * 0.05f, cap = StrokeCap.Round))
         val gap = size.minDimension * 0.1f
-        val firstLen = pathMeasureFirst.length
-        val posFirst = pathMeasureFirst.getPosition(firstLen * 0.2f)
-        val tanFirst = pathMeasureFirst.getTangent(firstLen * 0.2f)
-        val angleFirst = (atan2(tanFirst.y.toDouble(), tanFirst.x.toDouble()) * 180 / PI).toFloat()
-        rotate(angleFirst + 45f, pivot = posFirst) {
-            drawLine(
-                color = Color.White,
-                start = posFirst.copy(y = posFirst.y + gap),
-                end = posFirst,
-                strokeWidth = width * 0.05f,
-                cap = StrokeCap.Round
-            )
-        }
+        val strokeWidth = width * 0.05f
+        listOf(lineOne, lineTwo, lineThree).forEach { path ->
+            drawPath(path, color = Color.White, style = Stroke(width = strokeWidth * 1.5f, cap = StrokeCap.Round))
 
-        rotate(angleFirst - 45f, pivot = posFirst) {
-            drawLine(
-                color = Color.White,
-                start = posFirst.copy(y = posFirst.y - gap),
-                end = posFirst,
-                strokeWidth = width * 0.05f,
-                cap = StrokeCap.Round
-            )
-        }
+            val pm = PathMeasure()
+            pm.setPath(path, false)
+            val len = pm.length
+            fun drawV(fraction: Float, invertAngles: Boolean) {
+                val pos = pm.getPosition(len * fraction)
+                val tan = pm.getTangent(len * fraction)
+                val angle = (atan2(tan.y.toDouble(), tan.x.toDouble()) * 180 / PI).toFloat()
+                val firstOffset = if (invertAngles) -45f else 45f
+                val secondOffset = if (invertAngles) 45f else -45f
 
-        val posFirstInverse = pathMeasureFirst.getPosition(firstLen * 0.8f)
-        val tanFirstInverse = pathMeasureFirst.getTangent(firstLen * 0.8f)
-        val angleFirstInverse = (atan2(tanFirstInverse.y.toDouble(), tanFirstInverse.x.toDouble()) * 180 / PI).toFloat()
-        rotate(angleFirstInverse - 45f, pivot = posFirstInverse) {
-            drawLine(
-                color = Color.White,
-                start = posFirstInverse.copy(y = posFirstInverse.y + gap),
-                end = posFirstInverse,
-                strokeWidth = width * 0.05f,
-                cap = StrokeCap.Round
-            )
-        }
+                rotate(angle + firstOffset, pivot = pos) {
+                    drawLine(Color.White, start = pos.copy(y = pos.y + gap), end = pos, strokeWidth = strokeWidth, cap = StrokeCap.Round)
+                }
+                rotate(angle + secondOffset, pivot = pos) {
+                    drawLine(Color.White, start = pos.copy(y = pos.y - gap), end = pos, strokeWidth = strokeWidth, cap = StrokeCap.Round)
+                }
+            }
 
-        rotate(angleFirstInverse + 45f, pivot = posFirstInverse) {
-            drawLine(
-                color = Color.White,
-                start = posFirstInverse.copy(y = posFirstInverse.y - gap),
-                end = posFirstInverse,
-                strokeWidth = width * 0.05f,
-                cap = StrokeCap.Round
-            )
+            drawV(0.2f, false)
+            drawV(0.8f, true)
         }
     }
+
 }
 
 @Preview
