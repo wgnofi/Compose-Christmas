@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -50,6 +51,8 @@ import androidx.graphics.shapes.RoundedPolygon
 import androidx.graphics.shapes.star
 import androidx.graphics.shapes.toPath
 import com.raghul.composechristmas.ui.theme.ComposeChristmasTheme
+import kotlin.math.PI
+import kotlin.math.atan2
 
 @Composable
 fun Tree() {
@@ -773,17 +776,96 @@ fun Modifier.moon(): Modifier = this.drawWithCache {
     }
 }
 
+@Composable
+fun Modifier.snowFlake(): Modifier = this.drawWithCache {
+    val width = size.width
+    val height = size.height
+    val lineOneStart = Offset(x = width * 0.2f, y = height * 0.3f)
+    val lineOneEnd = Offset(x = width * 0.8f, y = height * 0.7f)
+    val lineTwoStart = Offset(x = width * 0.8f, y = height * 0.3f)
+    val lineTwoEnd = Offset(x = width * 0.2f, y = height * 0.7f)
+    val lineThreeStart = Offset(x = width * 0.5f, y = height * 0.15f)
+    val lineThreeEnd = Offset(x = width * 0.5f, y = height * 0.85f)
+    val lineOne = Path().apply {
+        moveTo(lineOneStart.x, lineOneStart.y)
+        lineTo(lineOneEnd.x, lineOneEnd.y)
+    }
+    val lineTwo = Path().apply {
+        moveTo(lineTwoStart.x, lineTwoStart.y)
+        lineTo(lineTwoEnd.x, lineTwoEnd.y)
+    }
+    val lineThree = Path().apply {
+        moveTo(lineThreeStart.x, lineThreeStart.y)
+        lineTo(lineThreeEnd.x, lineThreeEnd.y)
+    }
+    val pathMeasureFirst = PathMeasure()
+    pathMeasureFirst.setPath(lineOne, false)
+    onDrawBehind {
+        drawPath(lineOne, color = Color.White,
+            style = Stroke(width = width * 0.05f, cap = StrokeCap.Round))
+        drawPath(lineTwo, color = Color.White,
+            style = Stroke(width = width * 0.05f, cap = StrokeCap.Round))
+        drawPath(lineThree, color = Color.White,
+            style = Stroke(width = width * 0.05f, cap = StrokeCap.Round))
+        val gap = size.minDimension * 0.1f
+        val firstLen = pathMeasureFirst.length
+        val posFirst = pathMeasureFirst.getPosition(firstLen * 0.2f)
+        val tanFirst = pathMeasureFirst.getTangent(firstLen * 0.2f)
+        val angleFirst = (atan2(tanFirst.y.toDouble(), tanFirst.x.toDouble()) * 180 / PI).toFloat()
+        rotate(angleFirst + 45f, pivot = posFirst) {
+            drawLine(
+                color = Color.White,
+                start = posFirst.copy(y = posFirst.y + gap),
+                end = posFirst,
+                strokeWidth = width * 0.05f,
+                cap = StrokeCap.Round
+            )
+        }
 
+        rotate(angleFirst - 45f, pivot = posFirst) {
+            drawLine(
+                color = Color.White,
+                start = posFirst.copy(y = posFirst.y - gap),
+                end = posFirst,
+                strokeWidth = width * 0.05f,
+                cap = StrokeCap.Round
+            )
+        }
 
-//@Preview
-//@Composable
-//private fun StarPreview() {
-//    ComposeChristmasTheme {
-//        Box(modifier = Modifier
-//            .size(200.dp)
-//            .ribbonBox())
-//    }
-//}
+        val posFirstInverse = pathMeasureFirst.getPosition(firstLen * 0.8f)
+        val tanFirstInverse = pathMeasureFirst.getTangent(firstLen * 0.8f)
+        val angleFirstInverse = (atan2(tanFirstInverse.y.toDouble(), tanFirstInverse.x.toDouble()) * 180 / PI).toFloat()
+        rotate(angleFirstInverse - 45f, pivot = posFirstInverse) {
+            drawLine(
+                color = Color.White,
+                start = posFirstInverse.copy(y = posFirstInverse.y + gap),
+                end = posFirstInverse,
+                strokeWidth = width * 0.05f,
+                cap = StrokeCap.Round
+            )
+        }
+
+        rotate(angleFirstInverse + 45f, pivot = posFirstInverse) {
+            drawLine(
+                color = Color.White,
+                start = posFirstInverse.copy(y = posFirstInverse.y - gap),
+                end = posFirstInverse,
+                strokeWidth = width * 0.05f,
+                cap = StrokeCap.Round
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun StarPreview() {
+    ComposeChristmasTheme {
+        Box(modifier = Modifier
+            .size(200.dp)
+            .snowFlake())
+    }
+}
 @Preview
 @Composable
 private fun TreePreview() {
