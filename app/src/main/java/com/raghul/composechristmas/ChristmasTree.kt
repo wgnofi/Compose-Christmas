@@ -1,12 +1,19 @@
 package com.raghul.composechristmas
 
 import android.graphics.BlurMaskFilter
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -46,6 +53,84 @@ import com.raghul.composechristmas.ui.theme.ComposeChristmasTheme
 
 @Composable
 fun Tree() {
+    val iftOne = rememberInfiniteTransition(label = "star_transition_one")
+    val iftTwo = rememberInfiniteTransition(label = "star_transition_two")
+    val iftThree = rememberInfiniteTransition(label = "star_transition_three")
+    val iftFour = rememberInfiniteTransition(label = "star_transition_four")
+    val iftFive = rememberInfiniteTransition(label = "star_transition_five")
+    val iftSix = rememberInfiniteTransition(label = "star_transition_six")
+    val iftSeven = rememberInfiniteTransition(label = "star_transition_seven")
+
+    val alphaOne by iftOne.animateFloat(
+        initialValue = 0.5f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(300, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "iftOne_opacity"
+    )
+
+    val alphaTwo by iftTwo.animateFloat(
+        initialValue = 0.3f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(600, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "iftTwo_opacity"
+    )
+
+    val alphaThree by iftThree.animateFloat(
+        initialValue = 0.4f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(400, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "iftThree_opacity"
+    )
+
+    val alphaFour by iftFour.animateFloat(
+        initialValue = 0.2f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(400, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "iftFour_opacity"
+    )
+
+    val alphaFive by iftFive.animateFloat(
+        initialValue = 0.4f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(500, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "iftFive_opacity"
+    )
+
+    val alphaSix by iftSix.animateFloat(
+        initialValue = 0.8f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(300, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "iftSix_opacity"
+    )
+
+    val alphaSeven by iftSeven.animateFloat(
+        initialValue = 0.3f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(300, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "iftSeven_opacity"
+    )
+
     val roseBase = Color(183, 110, 121)
     val lightPink = Color(255, 182, 193)
     val highlight = Color(255, 240, 245)
@@ -84,37 +169,37 @@ fun Tree() {
             .align(alignment = Alignment.TopStart)
             .offset(x = 50.dp, y = 200.dp)
             .size(13.dp)
-            .drawStar(color = Color.White.copy(alpha = 0.5f)))
+            .drawStar(color = Color.White.copy(alpha = alphaOne)))
         Box(modifier = Modifier
             .align(alignment = Alignment.TopStart)
             .offset(x = 100.dp, y = 50.dp)
             .size(13.dp)
-            .drawStar(color = Color(0xFFFFFFE0)))
+            .drawStar(color = Color(0xFFFFFFE0).copy(alphaTwo)))
         Box(modifier = Modifier
             .align(alignment = Alignment.TopCenter)
             .offset(x = 20.dp, y = 10.dp)
             .size(10.dp)
-            .drawStar(color = Color.White.copy(alpha = 0.5f)))
+            .drawStar(color = Color.White.copy(alpha = alphaThree)))
         Box(modifier = Modifier
             .align(alignment = Alignment.TopCenter)
             .offset(x = 100.dp, y = 50.dp)
             .size(10.dp)
-            .drawStar(color = Color.White))
+            .drawStar(color = Color.White.copy(alphaFour)))
         Box(modifier = Modifier
             .align(alignment = Alignment.TopStart)
             .offset(x = 10.dp, y = 120.dp)
             .size(12.dp)
-            .drawStar(color = Color.White.copy(alpha = 0.5f)))
+            .drawStar(color = Color.White.copy(alpha = alphaFive)))
         Box(modifier = Modifier
             .align(alignment = Alignment.TopEnd)
             .offset(x = -10.dp, y = 220.dp)
             .size(12.dp)
-            .drawStar(color = Color.White.copy(alpha = 0.5f)))
+            .drawStar(color = Color.White.copy(alpha = alphaSix)))
         Box(modifier = Modifier
             .align(alignment = Alignment.TopEnd)
             .offset(x = (-20).dp, y = 100.dp)
             .size(12.dp)
-            .drawStar(color = Color.White))
+            .drawStar(color = Color.White.copy(alphaSeven)))
         for (i in 6 downTo 0) {
             val verticalShift = 0.08f * i
             val widthFactor = 0.55f + (0.05f * i)
@@ -687,6 +772,8 @@ fun Modifier.moon(): Modifier = this.drawWithCache {
         }
     }
 }
+
+
 
 //@Preview
 //@Composable
