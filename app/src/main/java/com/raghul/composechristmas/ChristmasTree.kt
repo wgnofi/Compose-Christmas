@@ -75,11 +75,50 @@ fun Tree() {
     val iftSix = rememberInfiniteTransition(label = "star_transition_six")
     val iftSeven = rememberInfiniteTransition(label = "star_transition_seven")
 
+    val starTopperScale = rememberInfiniteTransition(label = "star_topper_scale")
+    val topperScale by starTopperScale.animateFloat(
+        initialValue = 125f,
+        targetValue = 130f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "star_topper_scale"
+    )
+
+    val yOffsetForSnowFlake = rememberInfiniteTransition(label = "y_offset_for_snowflake")
+    val ySnowFlake by yOffsetForSnowFlake.animateFloat(
+        initialValue = -50f,
+        targetValue = 300f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(7000, easing = FastOutLinearInEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "y_offset_for_snowflake"
+    )
+    val alphaSnowFlake by yOffsetForSnowFlake.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(3500, easing = FastOutLinearInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "alpha_for_snowflake"
+    )
+    val rotationSnowFlake by yOffsetForSnowFlake.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(7000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart),
+        label = "rotation_for_snowflake"
+    )
+
     val fairyOne = rememberInfiniteTransition(label = "fairyOne")
     val fairyTwo = rememberInfiniteTransition(label = "fairyTwo")
     val fairyAnimOne by fairyOne.animateColor(
-        initialValue = Color(250, 10, 0).copy(alpha = 0.2f),
-        targetValue = Color(250, 10 , 0),
+        initialValue = Color(250, 10, 0).copy(alpha = 0.5f),
+        targetValue = Color(250, 0,  0),
         animationSpec = infiniteRepeatable(
             animation = tween(500, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse
@@ -247,33 +286,45 @@ fun Tree() {
             .drawStar(color = Color.White.copy(alphaSeven)))
         Box(modifier = Modifier
             .align(alignment = Alignment.TopEnd)
-            .offset(x = (-20).dp, y = 500.dp)
+            .offset(x = (-20).dp, y = 500.dp + ySnowFlake.dp)
             .size(20.dp)
+            .alpha(alphaSnowFlake)
+            .rotate(rotationSnowFlake)
             .snowFlake())
         Box(modifier = Modifier
             .align(alignment = Alignment.TopStart)
-            .offset(x = (20).dp, y = 400.dp)
+            .offset(x = (20).dp, y = 400.dp + ySnowFlake.dp)
             .size(30.dp)
+            .alpha(alphaSnowFlake)
+            .rotate(rotationSnowFlake)
             .snowFlake())
         Box(modifier = Modifier
             .align(alignment = Alignment.TopEnd)
-            .offset(x = (-20).dp, y = 400.dp)
+            .offset(x = (-20).dp, y = 400.dp + ySnowFlake.dp)
             .size(12.dp)
+            .alpha(alphaSnowFlake)
+            .rotate(rotationSnowFlake)
             .snowFlake())
         Box(modifier = Modifier
             .align(alignment = Alignment.TopStart)
-            .offset(x = (30).dp, y = 600.dp)
+            .offset(x = (30).dp, y = 600.dp + ySnowFlake.dp)
             .size(20.dp)
+            .alpha(alphaSnowFlake)
+            .rotate(rotationSnowFlake)
             .snowFlake())
         Box(modifier = Modifier
             .align(alignment = Alignment.TopStart)
-            .offset(x = (30).dp, y = 720.dp)
+            .offset(x = (30).dp, y = 720.dp + ySnowFlake.dp)
             .size(12.dp)
+            .alpha(alphaSnowFlake)
+            .rotate(rotationSnowFlake)
             .snowFlake())
         Box(modifier = Modifier
             .align(alignment = Alignment.TopEnd)
-            .offset(x = (-30).dp, y = 760.dp)
+            .offset(x = (-30).dp, y = 760.dp + ySnowFlake.dp)
             .size(15.dp)
+            .alpha(alphaSnowFlake)
+            .rotate(rotationSnowFlake)
             .snowFlake())
         for (i in 6 downTo 0) {
             val verticalShift = 0.08f * i
@@ -301,6 +352,13 @@ fun Tree() {
             .align(alignment = Alignment.TopCenter)
             .offset(y = 60.dp)
             .size(105.dp)
+            .radialStar()
+        )
+        Box(modifier = Modifier
+            .align(alignment = Alignment.TopCenter)
+            .offset(y = 50.dp)
+            .size(topperScale.dp)
+            .alpha(0.3f)
             .radialStar()
         )
 
