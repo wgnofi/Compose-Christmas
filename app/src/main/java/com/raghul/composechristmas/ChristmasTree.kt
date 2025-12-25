@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.PathMeasure
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.asComposePath
+import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
@@ -506,6 +507,11 @@ fun Tree() {
                 )
             )
         }
+        Box(modifier = Modifier
+            .align(alignment = Alignment.BottomStart)
+            .size(120.dp)
+            .snowMan()
+        )
     }
 }
 
@@ -536,6 +542,70 @@ fun Modifier.ribbonBox(): Modifier = this.drawWithCache {
             cornerRadius = CornerRadius(x = 20f, y = 20f))
     }
 }
+@Composable
+fun Modifier.snowMan(): Modifier = this.drawWithCache {
+    val width = size.width
+    val height = size.height
+    val bigCircleRadOffset = Offset(x = width * 0.5f, y = height * 0.7f)
+    val medCircleRadOffset = Offset(x = width * 0.5f, y = height * 0.7f)
+    val leftEye = Offset(x = width * 0.45f, y = height * 0.3f)
+    val rightEye = Offset(x = width * 0.6f, y = height * 0.3f)
+    val scarfLeft = Offset(x = width * 0.35f, y = height * 0.48f)
+    val scarfRight = Offset(x = width * 0.65f, y = height * 0.48f)
+    val scarfMagnet = Offset(x = width * 0.5f, y = height * 0.5f)
+    val leftHandStart = Offset(x = width * 0.1f, y = height * 0.5f)
+    val leftHandEnd = Offset(x = width * 0.4f, y = height * 0.6f)
+    val noseFirst = Offset(x = width * 0.52f, y = height * 0.3f)
+    val noseSecond = Offset(x = width * 0.65f, y = height * 0.35f)
+    val noseThird = Offset(x = width * 0.5f, y = height * 0.35f)
+    val nosePath = Path().apply {
+        moveTo(noseFirst.x, noseFirst.y)
+        lineTo(noseSecond.x, noseSecond.y)
+        lineTo(noseThird.x, noseThird.y)
+    }
+    val lPath = Path().apply {
+        moveTo(leftHandStart.x, leftHandStart.y)
+        lineTo(leftHandEnd.x, leftHandEnd.y)
+    }
+    val rightHandStart = Offset(x = width * 0.6f, y = height * 0.6f)
+    val rightHandEnd = Offset(x = width * 0.9f, y = height * 0.5f)
+    val branchOneStart = Offset(x = width * 0.2f, y = height * 0.4f)
+    val branchOneEnd = Offset(x = width * 0.25f, y = height * 0.55f)
+    val branchTwoStart = Offset(x = width * 0.8f, y = height * 0.55f)
+    val branchTwoEnd = Offset(x = width * 0.9f, y = height * 0.6f)
+    val bOnePath = Path().apply {
+        moveTo(branchOneStart.x, branchOneStart.y)
+        lineTo(branchOneEnd.x, branchOneEnd.y)
+    }
+    val bTwoPath = Path().apply {
+        moveTo(branchTwoStart.x, branchTwoStart.y)
+        lineTo(branchTwoEnd.x, branchTwoEnd.y)
+    }
+    val rPath = Path().apply {
+        moveTo(rightHandEnd.x, rightHandEnd.y)
+        lineTo(rightHandStart.x, rightHandStart.y)
+    }
+    val scarfPath = Path().apply {
+        moveTo(scarfLeft.x, scarfLeft.y)
+        quadraticTo(scarfMagnet.x, scarfMagnet.y, scarfRight.x, scarfRight.y)
+    }
+    val mcrTwo = Offset(x = width * 0.5f, y = height * 0.8f)
+    val head = Offset(x = width * 0.5f, y = height * 0.35f)
+    onDrawBehind {
+        drawPath(bOnePath, color = Color(101, 67, 33), style = Stroke(width = width * 0.03f))
+        drawPath(bTwoPath, color = Color(101, 67, 33), style = Stroke(width = width * 0.03f))
+        drawPath(lPath, color = Color(101, 67, 33), style = Stroke(width = width * 0.05f))
+        drawPath(rPath, color = Color(101, 67, 33), style = Stroke(width = width * 0.05f))
+        drawCircle(color = Color.White, radius = width * 0.25f, center = bigCircleRadOffset)
+        drawCircle(color = Color.White, radius = width * 0.17f, center = head)
+        drawCircle(color = Color.Black, radius = width * 0.03f, center = medCircleRadOffset)
+        drawCircle(color = Color.Black, radius = width * 0.03f, center = mcrTwo)
+        drawCircle(color = Color.Black, radius = width * 0.02f, center = leftEye)
+        drawCircle(color = Color.Black, radius = width * 0.02f, center = rightEye)
+        drawPath(nosePath, color = Color(255,140,0), style = Fill)
+        drawPath(scarfPath, color = Color.Red, style = Stroke(width = width * 0.05f))
+    }
+}
 
 @Composable
 fun Modifier.tinselGarland(): Modifier = this.drawWithCache {
@@ -553,7 +623,7 @@ fun Modifier.tinselGarland(): Modifier = this.drawWithCache {
     onDrawBehind {
         drawPath(path, color = Color.White,
             style = Stroke(width = width * 0.1f, cap = StrokeCap.Round,
-                pathEffect = PathEffect.dashPathEffect(floatArrayOf(15f, 25f), 0f))
+                pathEffect = PathEffect.dashPathEffect(floatArrayOf(5f, 25f), 0f))
         )
     }
 }
@@ -691,7 +761,7 @@ fun Modifier.jaggeredCone(
         )
         val roundedPath = roundedPolygon.toPath().asComposePath()
         onDrawBehind {
-            drawPath(roundedPath, color = color)
+            drawPath(roundedPath, color)
         }
     }
     .fillMaxSize()
@@ -1038,7 +1108,7 @@ private fun StarPreview() {
     ComposeChristmasTheme {
         Box(modifier = Modifier
             .size(200.dp)
-            .shadow())
+            .snowMan())
     }
 }
 @Preview
