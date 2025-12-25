@@ -4,13 +4,13 @@ import android.graphics.BlurMaskFilter
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +20,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -74,7 +77,11 @@ fun Tree() {
     val iftFive = rememberInfiniteTransition(label = "star_transition_five")
     val iftSix = rememberInfiniteTransition(label = "star_transition_six")
     val iftSeven = rememberInfiniteTransition(label = "star_transition_seven")
-
+    var colorsF by remember {
+        mutableStateOf(false)
+    }
+    val pairOne = Color(250, 10, 0) to Color(0xFF00FF00)
+    val pairTwo = Color(50, 200, 249) to Color(252,115,92)
     val starTopperScale = rememberInfiniteTransition(label = "star_topper_scale")
     val topperScale by starTopperScale.animateFloat(
         initialValue = 125f,
@@ -117,8 +124,8 @@ fun Tree() {
     val fairyOne = rememberInfiniteTransition(label = "fairyOne")
     val fairyTwo = rememberInfiniteTransition(label = "fairyTwo")
     val fairyAnimOne by fairyOne.animateColor(
-        initialValue = Color(250, 10, 0).copy(alpha = 0.5f),
-        targetValue = Color(250, 0,  0),
+        initialValue = if (colorsF) pairOne.first.copy(alpha = 0.5f) else pairTwo.first.copy(alpha = 0.5f),
+        targetValue = if (colorsF) pairOne.first else pairTwo.first,
         animationSpec = infiniteRepeatable(
             animation = tween(500, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse
@@ -127,8 +134,8 @@ fun Tree() {
     )
 
     val fairyAnimTwo by fairyTwo.animateColor(
-        initialValue =  Color(0xFF00FF00),
-        targetValue =  Color(0xFF00FF00).copy(alpha = 0.2f),
+        initialValue =  if (colorsF) pairOne.second else pairOne.second,
+        targetValue =  if (colorsF) pairOne.second.copy(alpha = 0.2f) else pairTwo.second.copy(alpha = 0.2f),
         animationSpec = infiniteRepeatable(
             animation = tween(500, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse
@@ -237,7 +244,12 @@ fun Tree() {
                 onDrawBehind {
                     drawRect(brush)
                 }
-            })
+            }
+            .clickable(
+                onClick = {
+                    colorsF = !colorsF
+                }
+            ))
         Box(modifier = Modifier
             .fillMaxSize()
             .trunk())
